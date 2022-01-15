@@ -158,7 +158,7 @@ morty_group = pygame.sprite.Group()
 
 
 def level_1():
-    player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_2_0.txt"))
+    player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_1.txt"))
     camera = Camera((level_x, level_y))
 
     running = True

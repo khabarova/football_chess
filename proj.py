@@ -6,6 +6,8 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 fps = 60
 
+
+# загрузка картинок
 def load_image(name):
     fullname = 'data'+'/'+name
     try:
@@ -19,10 +21,14 @@ def load_image(name):
     
     return image
 
+
+# выход из проги
 def terminate():
     pygame.quit()
     sys.exit()
 
+
+# загрузка уровня
 def load_level(name):
     fullname = "data/" + name
     with open(fullname, 'r') as map_file:
@@ -32,6 +38,8 @@ def load_level(name):
             level_map.append(line)
     return level_map
 
+
+# составляющие файла с уровнем
 def draw_level(level_map):
     new_player, x, y = None, None, None
     for y in range(len(level_map)):
@@ -41,10 +49,11 @@ def draw_level(level_map):
             elif level_map[y][x] == '#':
                 Tile('stones.png', x, y)
                 dragon = Dragon(x, y)
+            #     тот кто ищет(пользователь)
             elif level_map[y][x] == '@':
                 Tile('grass.png', x, y)
                 new_player = Player(x, y)
-            #цветок будет обозначен на карте уровня знаком "&"
+            #     то что нужно найти будет обозначен на карте уровня знаком "&"
             elif level_map[y][x] == '&':
                 Tile('grass.png', x, y)
                 morty = Morty(x, y)
@@ -54,6 +63,7 @@ def draw_level(level_map):
     return new_player, x, y, dragon, morty, bottle
 
 
+# тайлы
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
@@ -66,6 +76,7 @@ class Tile(pygame.sprite.Sprite):
             self.add(tiles_group, all_sprites)
 
 
+# класс игрока
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -86,8 +97,9 @@ class Player(pygame.sprite.Sprite):
         
     def move_right(self):
         self.rect = self.rect.move(+50, 0) 
-            
 
+
+# класс препятствия
 class Bottle(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -98,6 +110,7 @@ class Bottle(pygame.sprite.Sprite):
         self.add(bottle_group, all_sprites)
 
 
+# класс того что ищут
 class Morty(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -108,6 +121,7 @@ class Morty(pygame.sprite.Sprite):
         self.add(morty_group, all_sprites)
 
 
+# непроходимое препятствие
 class Dragon(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
@@ -116,6 +130,7 @@ class Dragon(pygame.sprite.Sprite):
         self.rect = self.rect.move(50 * pos_x, 50 * pos_y)
 
         self.add(dragon_group, all_sprites)
+
 
 #особый класс камеры, которая будет постоянно
 #рисовать нашего героя в центре уровня,
@@ -127,7 +142,7 @@ class Camera:
         self.field_size = field_size
     
     #метод пересчёта координат спрайтов всех тайлов,
-    #всключая тайл главного героя
+    #всключая тайл того кем играют
     def apply(self, obj):
         obj.rect.x += self.dx
 
@@ -143,7 +158,7 @@ class Camera:
         if obj.rect.y >= (self.field_size[1]) * obj.rect.height:
             obj.rect.y += -obj.rect.height * (1 + self.field_size[1])
 
-    #метод пересчёта координат главного героя
+    #метод пересчёта координат гг
     def update(self, target):
         self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
         self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
@@ -157,10 +172,12 @@ bottle_group = pygame.sprite.Group()
 morty_group = pygame.sprite.Group()
 
 
+#1 уровень
 def level_1():
     player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_1.txt"))
     camera = Camera((level_x, level_y))
 
+    # проверка на проход через дракона
     running = True
     while running:
         for event in pygame.event.get():
@@ -184,29 +201,47 @@ def level_1():
             if event.type == pygame.QUIT:
                 terminate()
 
-        # обновление камеры (строки 158-160)
+        # обновление камеры
         camera.update(player)
         for sprite in all_sprites:
             camera.apply(sprite)
 
-        if not pygame.sprite.groupcollide(player_group, bottle_group, False, False):
+        # рисование если игрок не наступил на бутылку
+        # if not pygame.sprite.groupcollide(player_group, bottle_group, False, False):
+        #     screen.fill(pygame.Color(0, 0, 0))
+        #     tiles_group.draw(screen)
+        #     player_group.draw(screen)
+        #     bottle_group.draw(screen)
+        #     morty_group.draw(screen)
+        #     dragon_group.draw(screen)
+        #
+        # # иначе игра завершается
+        # else:
+        #     gameover = load_image('gg.jpg')
+        #     screen.blit(gameover, (-190, -200))
+
+        if not pygame.sprite.collide_rect(player, morty):
             screen.fill(pygame.Color(0, 0, 0))
             tiles_group.draw(screen)
             player_group.draw(screen)
-            bottle_group.draw(screen)
             morty_group.draw(screen)
             dragon_group.draw(screen)
-
+            bottle_group.draw(screen)
         else:
-            gameover = load_image('gameover.png')
-            screen.blit(gameover, (75, 100))
-
+            all_sprites.empty()
+            player_group.empty()
+            tiles_group.empty()
+            morty_group.empty()
+            bottle_group.empty()
+            dragon_group.empty()
+            return
 
         pygame.display.flip()
         clock.tick(fps)
 
 
 def level_2():
+    # тоже самое, что и в 1 уровне
     player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_2_0.txt"))
     camera = Camera((level_x, level_y))
 
@@ -233,22 +268,21 @@ def level_2():
             if event.type == pygame.QUIT:
                 terminate()
 
-        # обновление камеры (строки 158-160)
         camera.update(player)
         for sprite in all_sprites:
             camera.apply(sprite)
 
-        if not pygame.sprite.groupcollide(player_group, bottle_group, False, False):
+        if not pygame.sprite.collide_rect(player, morty):
             screen.fill(pygame.Color(0, 0, 0))
             tiles_group.draw(screen)
             player_group.draw(screen)
-            bottle_group.draw(screen)
             morty_group.draw(screen)
             dragon_group.draw(screen)
+            bottle_group.draw(screen)
 
         else:
-            gameover = load_image('gameover.png')
-            screen.blit(gameover, (75, 100))
+            gameover = load_image('gg.jpg')
+            screen.blit(gameover, (-190, -200))
 
 
         pygame.display.flip()

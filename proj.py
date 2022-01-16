@@ -5,7 +5,7 @@ size = width, height = (500, 500)
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 fps = 60
-
+k = 0
 
 # загрузка картинок
 def load_image(name):
@@ -176,6 +176,7 @@ morty_group = pygame.sprite.Group()
 def level_1():
     player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_1.txt"))
     camera = Camera((level_x, level_y))
+    k = 0
 
     # проверка на проход через дракона
     running = True
@@ -214,11 +215,13 @@ def level_1():
         #     bottle_group.draw(screen)
         #     morty_group.draw(screen)
         #     dragon_group.draw(screen)
-        #
-        # # иначе игра завершается
-        # else:
-        #     gameover = load_image('gg.jpg')
-        #     screen.blit(gameover, (-190, -200))
+
+        # иначе игра завершается
+        if pygame.sprite.groupcollide(player_group, bottle_group, False, True):
+            k += 1
+            print(k)
+            gameover = load_image('gg.jpg')
+            screen.blit(gameover, (-190, -200))
 
         if not pygame.sprite.collide_rect(player, morty):
             screen.fill(pygame.Color(0, 0, 0))
@@ -227,7 +230,8 @@ def level_1():
             morty_group.draw(screen)
             dragon_group.draw(screen)
             bottle_group.draw(screen)
-        else:
+
+        if pygame.sprite.collide_rect(player, morty):
             all_sprites.empty()
             player_group.empty()
             tiles_group.empty()
@@ -244,6 +248,7 @@ def level_2():
     # тоже самое, что и в 1 уровне
     player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_2_0.txt"))
     camera = Camera((level_x, level_y))
+    k = 0
 
     running = True
     while running:
@@ -271,6 +276,12 @@ def level_2():
         camera.update(player)
         for sprite in all_sprites:
             camera.apply(sprite)
+
+        if pygame.sprite.groupcollide(player_group, bottle_group, False, True):
+            k += 1
+            print(k)
+            gameover = load_image('gg.jpg')
+            screen.blit(gameover, (-190, -200))
 
         if not pygame.sprite.collide_rect(player, morty):
             screen.fill(pygame.Color(0, 0, 0))

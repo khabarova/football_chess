@@ -1,5 +1,6 @@
 import pygame
 import sys
+import time
 
 size = width, height = (500, 500)
 screen = pygame.display.set_mode(size)
@@ -46,6 +47,8 @@ def draw_level(level_map):
         for x in range(len(level_map[y])):
             if level_map[y][x] == '.':
                 Tile('grass.png', x, y)
+            elif level_map[y][x] == ',':
+                Tile('кам.png', x, y)
             elif level_map[y][x] == '#':
                 Tile('stones.png', x, y)
                 dragon = Dragon(x, y)
@@ -142,7 +145,7 @@ class Camera:
         self.field_size = field_size
     
     #метод пересчёта координат спрайтов всех тайлов,
-    #всключая тайл того кем играют
+    #всключая тайл гг
     def apply(self, obj):
         obj.rect.x += self.dx
 
@@ -207,15 +210,6 @@ def level_1():
         for sprite in all_sprites:
             camera.apply(sprite)
 
-        # рисование если игрок не наступил на бутылку
-        # if not pygame.sprite.groupcollide(player_group, bottle_group, False, False):
-        #     screen.fill(pygame.Color(0, 0, 0))
-        #     tiles_group.draw(screen)
-        #     player_group.draw(screen)
-        #     bottle_group.draw(screen)
-        #     morty_group.draw(screen)
-        #     dragon_group.draw(screen)
-
         # иначе игра завершается
         if pygame.sprite.groupcollide(player_group, bottle_group, False, True):
             k += 1
@@ -244,9 +238,74 @@ def level_1():
         clock.tick(fps)
 
 
+# 2 уровень
 def level_2():
+    player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_2.txt"))
+    camera = Camera((level_x, level_y))
+    k = 0
+    lev_2 = load_image('2 level.jpg')
+    screen.blit(lev_2, (0, 0))
+
+    # проверка на проход через дракона
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                player.move_up()
+                if pygame.sprite.spritecollideany(player, dragon_group):
+                    player.move_down()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                player.move_down()
+                if pygame.sprite.spritecollideany(player, dragon_group):
+                    player.move_up()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                player.move_left()
+                if pygame.sprite.spritecollideany(player, dragon_group):
+                    player.move_right()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                player.move_right()
+                if pygame.sprite.spritecollideany(player, dragon_group):
+                    player.move_left()
+
+            if event.type == pygame.QUIT:
+                terminate()
+
+        # обновление камеры
+        camera.update(player)
+        for sprite in all_sprites:
+            camera.apply(sprite)
+
+        # иначе игра завершается
+        if pygame.sprite.groupcollide(player_group, bottle_group, False, True):
+            k += 1
+            print(k)
+            gameover = load_image('gg.jpg')
+            screen.blit(gameover, (-190, -200))
+
+        if not pygame.sprite.collide_rect(player, morty):
+            screen.fill(pygame.Color(0, 0, 0))
+            tiles_group.draw(screen)
+            player_group.draw(screen)
+            morty_group.draw(screen)
+            dragon_group.draw(screen)
+            bottle_group.draw(screen)
+
+        if pygame.sprite.collide_rect(player, morty):
+            all_sprites.empty()
+            player_group.empty()
+            tiles_group.empty()
+            morty_group.empty()
+            bottle_group.empty()
+            dragon_group.empty()
+            return
+
+        pygame.display.flip()
+        clock.tick(fps)
+
+# 3 уровень
+def level_3():
     # тоже самое, что и в 1 уровне
-    player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_2_0.txt"))
+    player, level_x, level_y, bottle, morty, dragon = draw_level(load_level("level_3.txt"))
     camera = Camera((level_x, level_y))
     k = 0
 
@@ -280,8 +339,6 @@ def level_2():
         if pygame.sprite.groupcollide(player_group, bottle_group, False, True):
             k += 1
             print(k)
-            gameover = load_image('gg.jpg')
-            screen.blit(gameover, (-190, -200))
 
         if not pygame.sprite.collide_rect(player, morty):
             screen.fill(pygame.Color(0, 0, 0))
@@ -295,12 +352,12 @@ def level_2():
             gameover = load_image('gg.jpg')
             screen.blit(gameover, (-190, -200))
 
-
         pygame.display.flip()
         clock.tick(fps)
 
 
 level_1()
 level_2()
+level_3()
 
 terminate()

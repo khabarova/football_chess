@@ -61,7 +61,7 @@ def menu():
 
 
 def rules():
-    menu_back = pygame.image.load('fon1.jpg')
+    menu_back = pygame.image.load('fon2.jpg')
     # в это функии мы выводим правила с помощью работы с файлами
     screen.fill('black')
     pygame.display.set_caption("Rules")
@@ -76,7 +76,7 @@ def rules():
         el = el.replace('\n', '')
         font = pygame.font.SysFont('Arial', 20)
         txt = font.render(el, True, (57, 255, 20))
-        text = font.render("Вернуться в меню", True, [255, 0, 0])
+        text = font.render("Вернуться в меню", True, [250, 250, 250])
         screen.blit(txt, (215, y))
         screen.blit(text, (150, 440))
 

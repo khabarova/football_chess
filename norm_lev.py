@@ -85,9 +85,9 @@ def show_res():
     for el in document1:
         el = el.replace('\n', '')
         font = pygame.font.SysFont('Arial', 20)
-        texte = font.render("Result of first level:", True, [0, 250, 0])
-        text = font.render("Вернуться в меню", True, [250, 250, 250])
-        txt = font.render(el, True, (57, 255, 20))
+        texte = font.render("Result of first level:", True, [250, 0, 250])
+        text = font.render("Вернуться в меню", True, [255, 80, 30])
+        txt = font.render(el, True, (250, 0, 250))
         screen.blit(texte, (215, y1))
         screen.blit(text, (0, 440))
         screen.blit(txt, (215, y))
@@ -97,8 +97,8 @@ def show_res():
     for el1 in document2:
         el1 = el1.replace('\n', '')
         font = pygame.font.SysFont('Arial', 20)
-        texte = font.render("Result of first level:", True, [0, 250, 0])
-        txt2 = font.render(el1, True, (57, 255, 20))
+        texte = font.render("Result of second level:", True, [250, 0, 250])
+        txt2 = font.render(el1, True, (250, 0, 250))
         screen.blit(txt2, (215, y))
         screen.blit(texte, (215, y1))
 
@@ -107,8 +107,8 @@ def show_res():
     for el2 in document3:
         el2 = el2.replace('\n', '')
         font = pygame.font.SysFont('Arial', 20)
-        texte = font.render("Result of first level:", True, [0, 250, 0])
-        txt3 = font.render(el2, True, (57, 255, 20))
+        texte = font.render("Result of third level:", True, [250, 0, 250])
+        txt3 = font.render(el2, True, (250, 0, 250))
         screen.blit(texte, (215, y1))
         screen.blit(txt3, (215, y))
 
@@ -140,8 +140,8 @@ def rules():
     for el in document2:
         el = el.replace('\n', '')
         font = pygame.font.SysFont('Arial', 20)
-        txt = font.render(el, True, (57, 255, 20))
-        text = font.render("Вернуться в меню", True, [250, 250, 250])
+        txt = font.render(el, True, (250, 0, 250))
+        text = font.render("Вернуться в меню", True, [255, 80, 30])
         screen.blit(txt, (215, y))
         screen.blit(text, (0, 440))
 
